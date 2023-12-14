@@ -11,6 +11,10 @@ export interface IRpcApiMethods {
     [methodName: string]: RpcMethod;
 }
 
+export type IRpcApiMethodsDevnet<TRpcMethods> = TRpcMethods & { readonly __devnet: true };
+export type IRpcApiMethodsTestnet<TRpcMethods> = TRpcMethods & { readonly __testnet: true };
+export type IRpcApiMethodsMainnet<TRpcMethods> = TRpcMethods & { readonly __mainnet: true };
+
 // RPC Subscription Methods
 export type RpcSubscriptionsApiConfig = Readonly<{
     parametersTransformer?: <T>(params: T, notificationName: string) => unknown[];
