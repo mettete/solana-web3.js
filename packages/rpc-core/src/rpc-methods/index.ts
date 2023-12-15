@@ -1,5 +1,13 @@
-import { createJsonRpcApi } from '@solana/rpc-transport';
-import { IRpcApi } from '@solana/rpc-transport';
+import {
+    createJsonRpcApi,
+    IRpcApi,
+    IRpcApiDevnet,
+    IRpcApiMainnet,
+    IRpcApiMethodsDevnet,
+    IRpcApiMethodsMainnet,
+    IRpcApiMethodsTestnet,
+    IRpcApiTestnet,
+} from '@solana/rpc-transport';
 
 import { patchParamsForSolanaLabsRpc } from '../params-patcher';
 import { patchResponseForSolanaLabsRpc } from '../response-patcher';
@@ -61,7 +69,7 @@ type Config = Readonly<{
     onIntegerOverflow?: (methodName: string, keyPath: (number | string)[], value: bigint) => void;
 }>;
 
-export type SolanaRpcMethods = GetAccountInfoApi &
+type SolanaRpcMethodsWithoutAirdrop = GetAccountInfoApi &
     GetBalanceApi &
     GetBlockApi &
     GetBlockCommitmentApi &
@@ -114,8 +122,23 @@ export type SolanaRpcMethods = GetAccountInfoApi &
     RequestAirdropApi &
     SendTransactionApi &
     SimulateTransactionApi;
+type SolanaRpcMethodsWithAirdrop = SolanaRpcMethodsWithoutAirdrop & RequestAirdropApi;
 
-export function createSolanaRpcApi(config?: Config): IRpcApi<SolanaRpcMethods> {
+export type SolanaRpcMethodsDevnet = IRpcApiMethodsDevnet<SolanaRpcMethodsWithoutAirdrop>;
+export type SolanaRpcMethodsTestnet = IRpcApiMethodsTestnet<SolanaRpcMethodsWithAirdrop>;
+export type SolanaRpcMethodsMainnet = IRpcApiMethodsMainnet<SolanaRpcMethodsWithAirdrop>;
+
+type SolanaRpcMethods = SolanaRpcMethodsDevnet | SolanaRpcMethodsTestnet | SolanaRpcMethodsMainnet;
+
+export function createSolanaRpcApi<TRpcMethods extends SolanaRpcMethods>(
+    config?: Config,
+): TRpcMethods extends IRpcApiMethodsDevnet<TRpcMethods>
+    ? IRpcApiDevnet<TRpcMethods>
+    : TRpcMethods extends IRpcApiMethodsTestnet<TRpcMethods>
+      ? IRpcApiTestnet<TRpcMethods>
+      : TRpcMethods extends IRpcApiMethodsMainnet<TRpcMethods>
+        ? IRpcApiMainnet<TRpcMethods>
+        : IRpcApi<TRpcMethods> {
     const handleIntegerOverflow = config?.onIntegerOverflow;
     return createJsonRpcApi<SolanaRpcMethods>({
         parametersTransformer: <T>(rawParams: T, methodName: string) =>
@@ -126,8 +149,17 @@ export function createSolanaRpcApi(config?: Config): IRpcApi<SolanaRpcMethods> {
                     : undefined,
             ) as unknown[],
         responseTransformer: <T>(rawResponse: unknown, methodName: string): T =>
-            patchResponseForSolanaLabsRpc(rawResponse, methodName as keyof SolanaRpcMethods),
-    });
+            patchResponseForSolanaLabsRpc(
+                rawResponse,
+                methodName as keyof TRpcMethods as Parameters<typeof patchResponseForSolanaLabsRpc>[1],
+            ),
+    }) as TRpcMethods extends IRpcApiMethodsDevnet<TRpcMethods>
+        ? IRpcApiDevnet<TRpcMethods>
+        : TRpcMethods extends IRpcApiMethodsTestnet<TRpcMethods>
+          ? IRpcApiTestnet<TRpcMethods>
+          : TRpcMethods extends IRpcApiMethodsMainnet<TRpcMethods>
+            ? IRpcApiMainnet<TRpcMethods>
+            : IRpcApi<TRpcMethods>;
 }
 
 export type {
