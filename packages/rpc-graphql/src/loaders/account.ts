@@ -1,4 +1,4 @@
-import { SolanaRpcMethods } from '@solana/rpc-core';
+import { GetAccountInfoApi } from '@solana/rpc-core';
 import DataLoader from 'dataloader';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -24,7 +24,7 @@ function normalizeArgs({
 /* Load an account from the RPC, transform it, then return it */
 async function loadAccount(rpc: Rpc, { address, ...config }: ReturnType<typeof normalizeArgs>) {
     const account = await rpc
-        .getAccountInfo(address, config as Parameters<SolanaRpcMethods['getAccountInfo']>[1])
+        .getAccountInfo(address, config as Parameters<GetAccountInfoApi['getAccountInfo']>[1])
         .send()
         .then(res => res.value)
         .catch(e => {

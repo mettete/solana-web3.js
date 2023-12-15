@@ -1,4 +1,4 @@
-import { SolanaRpcMethods } from '@solana/rpc-core';
+import { GetBlockApi } from '@solana/rpc-core';
 import DataLoader from 'dataloader';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -30,7 +30,7 @@ function normalizeArgs({
 /* Load a block from the RPC, transform it, then return it */
 async function loadBlock(rpc: Rpc, { slot, ...config }: ReturnType<typeof normalizeArgs>) {
     const block = await rpc
-        .getBlock(slot, config as unknown as Parameters<SolanaRpcMethods['getBlock']>[1])
+        .getBlock(slot, config as unknown as Parameters<GetBlockApi['getBlock']>[1])
         .send()
         .catch(e => {
             throw e;

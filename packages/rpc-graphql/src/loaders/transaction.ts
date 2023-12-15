@@ -1,4 +1,4 @@
-import { SolanaRpcMethods } from '@solana/rpc-core';
+import { GetTransactionApi } from '@solana/rpc-core';
 import DataLoader from 'dataloader';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -26,7 +26,7 @@ async function loadTransaction(rpc: Rpc, { signature, ...config }: ReturnType<ty
     const { encoding } = config;
 
     const transaction = await rpc
-        .getTransaction(signature, config as unknown as Parameters<SolanaRpcMethods['getTransaction']>[1])
+        .getTransaction(signature, config as unknown as Parameters<GetTransactionApi['getTransaction']>[1])
         .send()
         .catch(e => {
             throw e;
@@ -41,7 +41,7 @@ async function loadTransaction(rpc: Rpc, { signature, ...config }: ReturnType<ty
     // This ensures the response always has the full transaction meta.
     if (encoding !== 'jsonParsed') {
         const transactionJsonParsed = await rpc
-            .getTransaction(signature, config as unknown as Parameters<SolanaRpcMethods['getTransaction']>[1])
+            .getTransaction(signature, config as unknown as Parameters<GetTransactionApi['getTransaction']>[1])
             .send()
             .catch(e => {
                 throw e;
