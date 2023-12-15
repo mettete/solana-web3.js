@@ -166,6 +166,7 @@ export type {
     GetSignatureStatusesApi,
     GetSlotApi,
     GetSlotLeaderApi,
+    GetSlotLeadersApi,
     GetStakeActivationApi,
     GetStakeMinimumDelegationApi,
     GetSupplyApi,

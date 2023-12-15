@@ -61,4 +61,14 @@ export function createSolanaRpcSubscriptionsApi_UNSTABLE(
     >;
 }
 
-export type { AccountNotificationsApi, SignatureNotificationsApi, SlotNotificationsApi };
+export type {
+    AccountNotificationsApi,
+    BlockNotificationsApi,
+    LogsNotificationsApi,
+    ProgramNotificationsApi,
+    RootNotificationsApi,
+    SignatureNotificationsApi,
+    SlotNotificationsApi,
+    SlotsUpdatesNotificationsApi,
+    VoteNotificationsApi,
+};
